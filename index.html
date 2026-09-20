@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizary — Your quizzes, one place.</title>
+<link rel="icon" href="assets/favicon-placeholder.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Toast container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ============ WELCOME SCREEN ============ -->
+<section id="screen-welcome" class="screen active">
+  <div class="welcome-card">
+    <img src="assets/logo-placeholder.png" alt="Quizary logo" class="welcome-logo">
+    <h1 class="brand-title">Quizary</h1>
+    <p class="brand-tagline">Your quizzes, one place.</p>
+    <div class="role-buttons">
+      <button class="role-btn role-teacher" data-nav="teacher-login">
+        <i class="fa-solid fa-user-tie"></i>
+        <span>Teacher Login</span>
+      </button>
+      <button class="role-btn role-student" data-nav="student-library">
+        <i class="fa-solid fa-user-graduate"></i>
+        <span>Continue as Student</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEACHER LOGIN ============ -->
+<section id="screen-teacher-login" class="screen">
+  <div class="card auth-card">
+    <button class="back-btn" data-nav="welcome"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <i class="fa-solid fa-user-tie auth-icon"></i>
+    <h2>Teacher Login</h2>
+    <form id="loginForm" class="form">
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" autocomplete="username" required>
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+      <p id="loginError" class="error-text" hidden></p>
+      <button type="submit" class="btn btn-primary" id="loginSubmitBtn">
+        <i class="fa-solid fa-right-to-bracket"></i> Log In
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ TEACHER DASHBOARD ============ -->
+<section id="screen-teacher-dashboard" class="screen">
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <img src="assets/logo-placeholder.png" alt="Quizary" class="dash-logo">
+      <div>
+        <h2>Quizary</h2>
+        <span class="teacher-status"><i class="fa-solid fa-user-tie"></i> Teacher Dashboard</span>
+      </div>
+    </div>
+    <div class="dash-header-right">
+      <button id="teacherRefreshBtn" class="btn btn-icon" title="Refresh">
+        <i class="fa-solid fa-rotate"></i>
+      </button>
+      <button id="logoutBtn" class="btn btn-danger">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <div class="dash-toolbar">
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="teacherSearch" placeholder="Search quizzes...">
+      </div>
+      <select id="teacherFilterSubject" class="filter-select">
+        <option value="">All Subjects</option>
+      </select>
+      <select id="teacherFilterStatus" class="filter-select">
+        <option value="">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+      <button id="openAddQuizBtn" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Quiz
+      </button>
+    </div>
+
+    <div id="teacherLastRefresh" class="last-refresh"></div>
+
+    <div id="teacherQuizList" class="quiz-grid"></div>
+    <div id="teacherEmptyState" class="empty-state" hidden>
+      <i class="fa-solid fa-clipboard-question"></i>
+      <p>No quizzes yet</p>
+      <span>Add your first quiz to get started.</span>
+    </div>
+  </main>
+</section>
+
+<!-- ============ QUIZ FORM MODAL (Add/Edit) ============ -->
+<div id="quizFormModal" class="modal-overlay" hidden>
+  <div class="modal">
+    <button class="modal-close" id="closeQuizFormBtn"><i class="fa-solid fa-xmark"></i></button>
+    <h2 id="quizFormTitle"><i class="fa-solid fa-plus"></i> Add Quiz</h2>
+    <form id="quizForm" class="form">
+      <input type="hidden" id="quizId">
+      <label for="quizTitle">Title *</label>
+      <input type="text" id="quizTitle" required>
+
+      <label for="quizSubject">Subject *</label>
+      <input type="text" id="quizSubject" required>
+
+      <label for="quizDescription">Description</label>
+      <textarea id="quizDescription" rows="3"></textarea>
+
+      <label for="quizType">Quiz Source *</label>
+      <select id="quizType" required>
+        <option value="HTML">HTML File Upload</option>
+        <option value="URL">External URL / Link</option>
+      </select>
+
+      <div id="htmlUploadGroup">
+        <label for="quizHtmlFile">HTML Quiz File *</label>
+        <input type="file" id="quizHtmlFile" accept=".html,.htm,text/html">
+        <small class="form-help">Upload the HTML quiz file. Students will open it through the Quizary link.</small>
+      </div>
+
+      <div id="externalLinkGroup" hidden>
+        <label for="quizLink">Quiz Link *</label>
+        <input type="url" id="quizLink" placeholder="https://...">
+      </div>
+
+      <label for="quizStatus">Status *</label>
+      <select id="quizStatus" required>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+
+      <p id="quizFormError" class="error-text" hidden></p>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancelQuizFormBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="quizFormSubmitBtn">
+          <i class="fa-solid fa-floppy-disk"></i> Save Quiz
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ CONFIRM DELETE MODAL ============ -->
+<div id="confirmDeleteModal" class="modal-overlay" hidden>
+  <div class="modal modal-small">
+    <i class="fa-solid fa-triangle-exclamation confirm-icon"></i>
+    <h2>Delete this quiz?</h2>
+    <p>This action cannot be undone.</p>
+    <div class="form-actions">
+      <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STUDENT LIBRARY ============ -->
+<section id="screen-student-library" class="screen">
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <img src="assets/logo-placeholder.png" alt="Quizary" class="dash-logo">
+      <div>
+        <h2>Quizary</h2>
+        <span class="teacher-status"><i class="fa-solid fa-user-graduate"></i> Quiz Library</span>
+      </div>
+    </div>
+    <div class="dash-header-right">
+      <button id="studentRefreshBtn" class="btn btn-icon" title="Refresh">
+        <i class="fa-solid fa-rotate"></i>
+      </button>
+      <button class="btn btn-secondary" data-nav="welcome">
+        <i class="fa-solid fa-arrow-left"></i> Exit
+      </button>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <div class="dash-toolbar">
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="studentSearch" placeholder="Search quizzes...">
+      </div>
+      <select id="studentFilterSubject" class="filter-select">
+        <option value="">All Subjects</option>
+      </select>
+      <select id="studentFilterType" class="filter-select">
+        <option value="">All Types</option>
+        <option value="HTML">HTML</option>
+        <option value="URL">URL</option>
+      </select>
+    </div>
+
+    <div id="studentLastRefresh" class="last-refresh"></div>
+    <div id="studentSyncNotice" class="sync-notice" hidden></div>
+
+    <div id="studentQuizList" class="quiz-grid"></div>
+    <div id="studentEmptyState" class="empty-state" hidden>
+      <i class="fa-solid fa-clipboard-question"></i>
+      <p>No quizzes yet</p>
+      <span>There are no active quizzes available right now.</span>
+    </div>
+  </main>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
